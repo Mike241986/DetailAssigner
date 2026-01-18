@@ -1,6 +1,6 @@
 ﻿Name,Seniority,Hallway,Kitchen comp,Kitchen bonus,bathroom comp ,bathroom bonus,common comp,common bonus
-Newbe 1G,0,NW1,0,0,0,0,0,0
-Newbe 2G,0,NW1,0,0,100,0,0,0
+Newbe 1G,0,NW1,0,0,0,0,0,1
+Newbe 2G,0,NW1,0,0,100,0,50,0
 G1,1,NW1,50,0,0,0,0,0
 G3,3,NW1,0,0,0,0,0,0
 Newbe 3G,0,NW2,0,0,0,1,25,0
