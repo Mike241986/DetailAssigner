@@ -385,6 +385,140 @@ for i in range(num_days_common_detail):
 	print(f"Common Detail Day {i+1} South: {', '.join(cd_south_assignments[i])}")
 	print(f"Common Detail Day {i+1} Middle: {', '.join(cd_middle_assignments[i])}")
 
+
+#---------------------------------------------------
+# bathroom detail assignment detail
+bd_days = 15
+
+
+# create bathroom detail comp and bonus arrays
+bd_NW1_comp = NW1_residents[['bathroom comp ']].to_numpy()
+bd_NW1_bonus = NW1_residents[['bathroom bonus']].to_numpy()
+bd_NW2_comp = NW2_residents[['bathroom comp ']].to_numpy()
+bd_NW2_bonus = NW2_residents[['bathroom bonus']].to_numpy()
+bd_NE1_comp = NE1_residents[['bathroom comp ']].to_numpy()
+bd_NE1_bonus = NE1_residents[['bathroom bonus']].to_numpy()
+bd_NE2_comp = NE2_residents[['bathroom comp ']].to_numpy()
+bd_NE2_bonus = NE2_residents[['bathroom bonus']].to_numpy()
+bd_SW1_comp = SW1_residents[['bathroom comp ']].to_numpy()
+bd_SW1_bonus = SW1_residents[['bathroom bonus']].to_numpy()
+bd_SW2_comp = SW2_residents[['bathroom comp ']].to_numpy()
+bd_SW2_bonus = SW2_residents[['bathroom bonus']].to_numpy()
+bd_SE1_comp = SE1_residents[['bathroom comp ']].to_numpy()
+bd_SE1_bonus = SE1_residents[['bathroom bonus']].to_numpy()
+bd_SE2_comp = SE2_residents[['bathroom comp ']].to_numpy()
+bd_SE2_bonus = SE2_residents[['bathroom bonus']].to_numpy()
+
+# create 1d array for all bathroom detail assignments
+bd_NW1 = [["" for _ in range(1)] for _ in range(bd_days)]
+bd_NW2 = [["" for _ in range(1)] for _ in range(bd_days)]
+bd_NE1 = [["" for _ in range(1)] for _ in range(bd_days)]
+bd_NE2 = [["" for _ in range(1)] for _ in range(bd_days)]
+bd_SW1 = [["" for _ in range(1)] for _ in range(bd_days)]
+bd_SW2 = [["" for _ in range(1)] for _ in range(bd_days)]
+bd_SE1 = [["" for _ in range(1)] for _ in range(bd_days)]
+bd_SE2 = [["" for _ in range(1)] for _ in range(bd_days)]
+
+# bathroom detail assignment logic
+def check_bathroom_compensation(bd_comp_array, bathroom_location):
+	# find how many 100 comp residents there are
+	comp_100_count = np.sum(bd_comp_array == 100)
+	if comp_100_count != 1:
+		print(f"Error: There should be exactly one resident with 100% bathroom compensation in {bathroom_location} hallway.")
+		return False
+	return True
+
+def assign_bathroom_detail(bd_comp_array, bd_bonus_array, bd_days, residents_df_hallway):
+	num_residents = len(residents_df_hallway)
+	bathroom_counter = 0
+	round_bathroom = 1 # this counter keeps in track of which round it is, so it determines how many details to assign to a specific person
+	bd_assignment_array = [["" for _ in range(1)] for _ in range(bd_days)]
+
+	# assign the first detail to resident with 100% compensation
+	for i in range(num_residents):
+		# should only be one resident with 100 comp
+		if bd_comp_array[i] == 100:
+			bd_assignment_array[0] = residents_df_hallway.iloc[i]['Name']
+			break
+	for ii in range(1, bd_days):
+		# assign bathroom detail for the day
+		while True:
+			# wrap around the counter
+			if bathroom_counter == num_residents:
+				bathroom_counter = 0
+				round_bathroom += 1
+			# find the next resident to assign
+			if bd_comp_array[bathroom_counter] == 100 :
+				# skip this resident as they have respective compensation
+				bathroom_counter += 1
+			elif round_bathroom%4 ==2 and (bd_comp_array[bathroom_counter] == 50 or bd_comp_array[bathroom_counter] == 75):
+				# skip this resident as they have respective compensation
+				bathroom_counter += 1
+			elif round_bathroom%4 ==3 and bd_comp_array[bathroom_counter] == 75:
+				# skip this resident as they have respective compensation
+				bathroom_counter += 1
+			elif round_bathroom%4 ==0 and (bd_comp_array[bathroom_counter] == 25 or bd_comp_array[bathroom_counter] == 50 or bd_comp_array[bathroom_counter] == 75):
+				# skip this resident as they have respective compensation
+				bathroom_counter += 1
+			elif bd_bonus_array[bathroom_counter] != 0:
+				# skip this resident as they have a bonus for this time
+				# decrement their bonus count 
+				bd_bonus_array[bathroom_counter] -= 1
+				bathroom_counter += 1
+			else:
+				# assign this resident to the bathroom detail
+				bd_assignment_array[ii] = residents_df_hallway.iloc[bathroom_counter]['Name']
+				bathroom_counter += 1
+				break
+	return bd_assignment_array
+# determine who is the first resident to assign bathroom detail to (manager, who have 100% compensation)
+
+# check if bathroom manager compensations are assigned 
+if not check_bathroom_compensation(bd_NW1_comp, "NW1"):
+	exit()
+if not check_bathroom_compensation(bd_NW2_comp, "NW2"):
+	exit()
+if not check_bathroom_compensation(bd_NE1_comp, "NE1"):
+	exit()
+if not check_bathroom_compensation(bd_NE2_comp, "NE2"):
+	exit()
+if not check_bathroom_compensation(bd_SW1_comp, "SW1"):
+	exit()
+if not check_bathroom_compensation(bd_SW2_comp, "SW2"):
+	exit()
+if not check_bathroom_compensation(bd_SE1_comp, "SE1"):
+	exit()
+if not check_bathroom_compensation(bd_SE2_comp, "SE2"):
+	exit()
+print("Bathroom compensation check passed for all hallways.")
+# assign bathroom details for each hallway
+bd_NW1 = assign_bathroom_detail(bd_NW1_comp, bd_NW1_bonus, bd_days, NW1_residents)
+bd_NW2 = assign_bathroom_detail(bd_NW2_comp, bd_NW2_bonus, bd_days, NW2_residents)
+bd_NE1 = assign_bathroom_detail(bd_NE1_comp, bd_NE1_bonus, bd_days, NE1_residents)
+bd_NE2 = assign_bathroom_detail(bd_NE2_comp, bd_NE2_bonus, bd_days, NE2_residents)
+bd_SW1 = assign_bathroom_detail(bd_SW1_comp, bd_SW1_bonus, bd_days, SW1_residents)
+bd_SW2 = assign_bathroom_detail(bd_SW2_comp, bd_SW2_bonus, bd_days, SW2_residents)
+bd_SE1 = assign_bathroom_detail(bd_SE1_comp, bd_SE1_bonus, bd_days, SE1_residents)
+bd_SE2 = assign_bathroom_detail(bd_SE2_comp, bd_SE2_bonus, bd_days, SE2_residents)	
+# print the bathroom detail assignments
+for i in range(bd_days):
+	print(f"Bathroom Detail Day {i+1} NW1: {bd_NW1[i]}")
+for i in range(bd_days):
+	print(f"Bathroom Detail Day {i+1} NW2: {bd_NW2[i]}")
+for i in range(bd_days):
+	print(f"Bathroom Detail Day {i+1} NE1: {bd_NE1[i]}")
+for i in range(bd_days):
+	print(f"Bathroom Detail Day {i+1} NE2: {bd_NE2[i]}")
+for i in range(bd_days):
+	print(f"Bathroom Detail Day {i+1} SW1: {bd_SW1[i]}")
+for i in range(bd_days):
+	print(f"Bathroom Detail Day {i+1} SW2: {bd_SW2[i]}")
+for i in range(bd_days):
+	print(f"Bathroom Detail Day {i+1} SE1: {bd_SE1[i]}")
+for i in range(bd_days):
+	print(f"Bathroom Detail Day {i+1} SE2: {bd_SE2[i]}")
+
+#---------------------------------------------------
 # resident_Kitchen_comp = residents_df['Kitchen comp'].tolist()
 # resident_Kitchen_bonus = residents_df['Kitchen bonus'].tolist()
 # resident_bathroom_comp = residents_df['bathroom comp '].tolist()
