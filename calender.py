@@ -1,7 +1,7 @@
 import csv
 import calendar
 
-
+#function Creates a CSV in month format with appropriate start and end dates
 def create_calendar(year, month, detail):
     m = ['','January','February','March','April','May','June','July','August','September','October','November','December']
     cal = calendar.monthcalendar(int(year), int(month))
@@ -11,7 +11,7 @@ def create_calendar(year, month, detail):
         writer = csv.writer(f)
         writer.writerow(headers)
         for week in cal:
-            writer.writerow([day if day != 0 else '   ' for day in week])
+            writer.writerow([day if day != 0 else '' for day in week])
 
 
 
