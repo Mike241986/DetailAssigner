@@ -5,6 +5,22 @@ import matplotlib.pyplot as plt
 # %matplotlib inline
 import pandas as pd
 
+#-------------------------------------------------------------------
+# kitchen detail assignment logics
+num_kitchen_details = 25
+resident_per_kitchen_detail = 3
+#-------------------------------------------------------------------
+# COMMON DETAIL ASSIGNMENT 
+num_days_common_detail = 15
+num_south_detail = 3		# details in south building
+num_north_detail = 3	# details in north building
+num_middle_detail = 2		# details in middle building and outside 
+separate_boy_girls = True
+#-------------------------------------------------------------------
+# bathroom detail assignment detail
+bd_days = 15
+#---------------------------------------------------
+
 # import residents list as xlsx file 
 residents_df = pd.read_csv('ResidentsList.csv')
 
@@ -33,14 +49,10 @@ SE2_residents = resident_boys[resident_boys['Hallway'] == 'SE2'].reset_index(dro
 # print(NW1_residents)
 
 #-------------------------------------------------------------------
-# kitchen detail assignment logics
-num_kitchen_details = 25
-resident_per_kitchen_detail = 3
-kitchen_detail_assignments = []
-first_round = True
-#-------------------------------------------------------------------
+# KITCHEN DETAIL ASSIGNMENT
 
 # create a array for kitchen comp and bonus
+first_round = True	# flag to keep in track of the round 
 kd_comp = residents_df[['Kitchen comp']].to_numpy()
 kd_bonus = residents_df[['Kitchen bonus']].to_numpy()
 # count how many new residents there are to assign kitchen details to
@@ -48,6 +60,8 @@ num_new_residents = len(residents_df[residents_df['Seniority'] == 0])
 total_residents = len(residents_df)
 print(f"Total residents: {total_residents}, New residents: {num_new_residents}")
 
+print()
+print("Starting kitchen detail assignment...")
 round = 1 # this counter keeps in track of which round it is, so it determines how many details to assign to a specific person
 # create an empty dictionary to hold the assignments
 current_index = 0
@@ -162,13 +176,8 @@ for ii in range(num_kitchen_details):
 for i in range(num_kitchen_details):
 	print(f"Kitchen Detail {i+1}: {', '.join(kd_assignments[i])}")
 
-#-------------------------------------------------------------------
-# COMMON DETAIL ASSIGNMENT 
-num_days_common_detail = 15
-num_south_detail = 3		# details in south building
-num_north_detail = 3	# details in north building
-num_middle_detail = 2		# details in middle building and outside 
-separate_boy_girls = True
+print()
+print("Starting common detail assignment...")
 #-------------------------------------------------------------------
 # Common detail assignment logic
 if separate_boy_girls:
@@ -386,9 +395,8 @@ for i in range(num_days_common_detail):
 	print(f"Common Detail Day {i+1} Middle: {', '.join(cd_middle_assignments[i])}")
 
 
-#---------------------------------------------------
-# bathroom detail assignment detail
-bd_days = 15
+print()
+print("Starting bathroom detail assignment...")
 
 
 # create bathroom detail comp and bonus arrays
